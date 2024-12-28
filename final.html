@@ -1,0 +1,5157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payroll Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+        }
+
+        body {
+            background-color: #f5f6fa;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-menu {
+            margin-top: 30px;
+        }
+
+        .nav-item {
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item:hover {
+            background-color: var(--secondary);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Employee Table */
+        .employee-table {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--light);
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .submit-btn {
+            background-color: var(--success);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+        }
+
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .nav-item.active {
+            background-color: var(--secondary);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card-content .main-stat {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+
+        .sub-stats p {
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+
+        .payment-breakdown, .bills-summary {
+            margin-top: 10px;
+        }
+
+        .payment-item, .bills-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .recent-transactions {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .recent-transactions table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .recent-transactions th, 
+        .recent-transactions td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .status.completed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status.pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .date-filter {
+            margin-bottom: 20px;
+        }
+
+        .date-filter select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .cash-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .summary-card h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .summary-card .date-info,
+        .summary-card .transaction-count,
+        .summary-card .calculation-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .transaction-controls {
+            margin: 20px 0;
+        }
+
+        .add-btn {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #2ecc71;
+            color: white;
+            cursor: pointer;
+        }
+
+        .add-btn.expense {
+            background: #e74c3c;
+        }
+
+        .transaction-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .submit-btn, .cancel-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .collection-row {
+            background-color: #f8fff8;
+        }
+
+        .expense-row {
+            background-color: #fff8f8;
+        }
+
+        .opening-balance-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .edit-balance-btn {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .edit-balance-btn:hover {
+            background: #2980b9;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bills-summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .bills-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .bills-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .bills-table th,
+        .bills-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .bill-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .unpaid-bills-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .unpaid-bills-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .unpaid-bills-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .unpaid-bills-table th,
+        .unpaid-bills-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .unpaid-bill-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .mpesa-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .mpesa-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .mpesa-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .mpesa-table th,
+        .mpesa-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .mpesa-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .main-stat {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+
+        .sub-stats p {
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+
+        .payment-breakdown, .bills-summary {
+            margin-top: 10px;
+        }
+
+        .payment-item, .bills-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .recent-transactions {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .recent-transactions table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .recent-transactions th, 
+        .recent-transactions td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .unpaid-bills-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .unpaid-bills-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .unpaid-bills-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .unpaid-bills-table th,
+        .unpaid-bills-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .unpaid-bill-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payroll Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+        }
+
+        body {
+            background-color: #f5f6fa;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-menu {
+            margin-top: 30px;
+        }
+
+        .nav-item {
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item:hover {
+            background-color: var(--secondary);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Employee Table */
+        .employee-table {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--light);
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .submit-btn {
+            background-color: var(--success);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+        }
+
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .nav-item.active {
+            background-color: var(--secondary);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card-content .main-stat {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+
+        .sub-stats p {
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+
+        .payment-breakdown, .bills-summary {
+            margin-top: 10px;
+        }
+
+        .payment-item, .bills-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .recent-transactions {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .recent-transactions table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .recent-transactions th, 
+        .recent-transactions td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .status.completed {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status.pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .date-filter {
+            margin-bottom: 20px;
+        }
+
+        .date-filter select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .cash-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .summary-card h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .summary-card .date-info,
+        .summary-card .transaction-count,
+        .summary-card .calculation-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .transaction-controls {
+            margin: 20px 0;
+        }
+
+        .add-btn {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #2ecc71;
+            color: white;
+            cursor: pointer;
+        }
+
+        .add-btn.expense {
+            background: #e74c3c;
+        }
+
+        .transaction-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .submit-btn, .cancel-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .collection-row {
+            background-color: #f8fff8;
+        }
+
+        .expense-row {
+            background-color: #fff8f8;
+        }
+
+        .opening-balance-form {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .edit-balance-btn {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .edit-balance-btn:hover {
+            background: #2980b9;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2ecc71;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bills-summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .bills-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .bills-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .bills-table th,
+        .bills-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .bill-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .unpaid-bills-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .unpaid-bills-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .unpaid-bills-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .unpaid-bills-table th,
+        .unpaid-bills-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .unpaid-bill-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .mpesa-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .mpesa-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .mpesa-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .mpesa-table th,
+        .mpesa-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .mpesa-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .main-stat {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+
+        .sub-stats p {
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+
+        .payment-breakdown, .bills-summary {
+            margin-top: 10px;
+        }
+
+        .payment-item, .bills-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .recent-transactions {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .recent-transactions table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .recent-transactions th, 
+        .recent-transactions td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .unpaid-bills-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .unpaid-bills-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .unpaid-bills-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .unpaid-bills-table th,
+        .unpaid-bills-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .unpaid-bill-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .employees-table {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .employees-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .employees-table th,
+        .employees-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .delete-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .employee-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                PayrollPro
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active" data-section="dashboard">Dashboard</div>
+                <div class="nav-item" data-section="employees">Employees</div>
+                <div class="nav-item" data-section="pdq-visa">PDQ Visa Card</div>
+                <div class="nav-item" data-section="cash">Cash Transaction</div>
+                <div class="nav-item" data-section="paid-bills">Paid Bills</div>
+                <div class="nav-item" data-section="unpaid-bills">Unpaid Bills</div>
+                <div class="nav-item" data-section="mpesa">M-PESA</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Each section will be shown/hidden based on navigation -->
+            
+            <!-- Dashboard Section -->
+            <div class="content-section" id="dashboard">
+                <div class="header">
+                    <h2>Dashboard Overview</h2>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="dashboard-grid">
+                    <!-- Employee Stats -->
+                    <div class="card">
+                        <h3>Total Employees</h3>
+                        <div class="card-content">
+                            <div class="main-stat" id="totalEmployees">0</div>
+                            <div class="sub-stats">
+                                <p>Active: <span id="activeEmployees">0</span></p>
+                                <p>On Leave: <span id="onLeaveEmployees">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Overview -->
+                    <div class="card">
+                        <h3>Total Payroll</h3>
+                        <div class="card-content">
+                            <div class="main-stat" id="totalPayroll">KSH 0</div>
+                            <div class="sub-stats">
+                                <p>Processed: KSH <span id="processedPayroll">0</span></p>
+                                <p>Pending: KSH <span id="pendingPayroll">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employees Section -->
+            <div class="content-section" id="employees">
+                <div class="header">
+                    <h2>Employees Management</h2>
+                    <button class="add-btn" onclick="showEmployeeForm()">Add New Employee</button>
+                </div>
+
+                <!-- Employee Form -->
+                <div class="employee-form" id="employeeForm" style="display: none;">
+                    <h3>New Employee</h3>
+                    <form id="employeeFormElement">
+                        <div class="form-group">
+                            <label>ID</label>
+                            <input type="text" id="employeeId" required placeholder="e.g., E001">
+                        </div>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="employeeName" required placeholder="e.g., John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" id="employeeDepartment" required placeholder="e.g., Sales">
+                        </div>
+                        <div class="form-group">
+                            <label>Position</label>
+                            <input type="text" id="employeePosition" required placeholder="e.g., Manager">
+                        </div>
+                        <div class="form-group">
+                            <label>Salary (KSH)</label>
+                            <input type="number" id="employeeSalary" required min="0" step="1">
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="submit-btn">Save Employee</button>
+                            <button type="button" class="cancel-btn" onclick="hideEmployeeForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Employees Table -->
+                <div class="employees-table">
+                    <h3>Employees List</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Position</th>
+                                <th>Salary</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeesTableBody">
+                            <!-- Employees will be listed here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PDQ Visa Card Section -->
+            <div class="content-section" id="pdq-visa">
+                <div class="header">
+                    <h2>PDQ Visa Card</h2>
+                    <button class="submit-btn">New Transaction</button>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h3>Total Card Transactions</h3>
+                        <p>KSH 4,500,000</p>
+                    </div>
+                    <div class="card">
+                        <h3>Pending Transactions</h3>
+                        <p>3</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cash Transaction Section -->
+            <div class="content-section" id="cash">
+                <div class="header">
+                    <h2>Cash Transaction Management</h2>
+                    <div class="date-picker">
+                        <input type="date" id="cashDate" value="2024-03-21">
+                    </div>
+                </div>
+
+                <!-- Cash Summary Cards -->
+                <div class="cash-summary">
+                    <div class="summary-card opening">
+                        <h3>Opening Balance</h3>
+                        <div class="opening-balance-display" id="openingBalanceDisplay">
+                            <div class="amount">KSH <span id="openingBalanceAmount">500,000</span></div>
+                            <div class="date-info">As of <span id="openingBalanceDate">March 21, 2024</span></div>
+                            <button class="edit-balance-btn" onclick="showOpeningBalanceForm()">
+                                Update Balance
+                            </button>
+                        </div>
+                        
+                        <!-- Opening Balance Update Form -->
+                        <div class="opening-balance-form" id="openingBalanceForm" style="display: none;">
+                            <form id="updateOpeningBalanceForm">
+                                <div class="form-group">
+                                    <label>New Opening Balance (KSH)</label>
+                                    <input type="number" 
+                                           id="newOpeningBalance" 
+                                           required 
+                                           min="0" 
+                                           step="1">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date</label>
+                                    <input type="date" 
+                                           id="openingBalanceUpdateDate" 
+                                           required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Reason for Update</label>
+                                    <input type="text" 
+                                           id="balanceUpdateReason" 
+                                           required 
+                                           placeholder="Enter reason for balance update">
+                                </div>
+                                <div class="form-buttons">
+                                    <button type="submit" class="submit-btn">Save Balance</button>
+                                    <button type="button" class="cancel-btn" onclick="hideOpeningBalanceForm()">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="summary-card collection">
+                        <h3>Collections</h3>
+                        <div class="amount">KSH 325,000</div>
+                        <div class="transaction-count">15 transactions today</div>
+                    </div>
+                    <div class="summary-card expenses">
+                        <h3>Expenses</h3>
+                        <div class="amount">KSH 175,000</div>
+                        <div class="transaction-count">8 transactions today</div>
+                    </div>
+                    <div class="summary-card balance">
+                        <h3>Current Balance</h3>
+                        <div class="amount">KSH 650,000</div>
+                        <div class="calculation-info">Opening + Collections - Expenses</div>
+                    </div>
+                </div>
+
+                <!-- Transaction Controls -->
+                <div class="transaction-controls">
+                    <button class="add-btn" onclick="showTransactionForm('collection')">Add Collection</button>
+                    <button class="add-btn expense" onclick="showTransactionForm('expense')">Add Expense</button>
+                </div>
+
+                <!-- Updated Transaction Form -->
+                <div class="transaction-form" id="transactionForm" style="display: none;">
+                    <h3>New Transaction</h3>
+                    <form id="cashTransactionForm">
+                        <div class="form-group">
+                            <label>Transaction Type</label>
+                            <select id="transactionType" required>
+                                <option value="collection">Collection</option>
+                                <option value="expense">Expense</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (KSH)</label>
+                            <input type="number" id="transactionAmount" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" id="transactionDescription" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Reference Number</label>
+                            <input type="text" id="transactionReference" required>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="submit-btn">Save Transaction</button>
+                            <button type="button" class="cancel-btn" onclick="hideTransactionForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Updated Transaction History -->
+                <div class="transaction-history">
+                    <h3>Today's Transactions</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Reference</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionTableBody">
+                            <!-- Transactions will be inserted here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Paid Bills Section -->
+            <div class="content-section" id="paid-bills">
+                <div class="header">
+                    <h2>Paid Bills Management</h2>
+                    <button class="add-btn" onclick="showBillForm()">Add New Bill Payment</button>
+                </div>
+
+                <!-- Bill Payment Form -->
+                <div class="bill-form" id="billForm" style="display: none;">
+                    <h3>New Bill Payment</h3>
+                    <form id="paidBillForm">
+                        <div class="form-group">
+                            <label>Bill Name/Description</label>
+                            <input type="text" id="billName" required placeholder="e.g., Electricity Bill">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (KSH)</label>
+                            <input type="number" id="billAmount" required min="0" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Date</label>
+                            <input type="date" id="billDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Reference</label>
+                            <input type="text" id="billReference" required placeholder="e.g., Receipt Number">
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="submit-btn">Save Payment</button>
+                            <button type="button" class="cancel-btn" onclick="hideBillForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Bills Summary -->
+                <div class="bills-summary-cards">
+                    <div class="summary-card">
+                        <h3>Total Paid Bills</h3>
+                        <div class="amount" id="totalPaidBills">KSH 0</div>
+                        <div class="count" id="billCount">0 bills paid</div>
+                    </div>
+                </div>
+
+                <!-- Paid Bills Table -->
+                <div class="bills-table">
+                    <h3>Paid Bills History</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Bill Name</th>
+                                <th>Amount</th>
+                                <th>Reference</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paidBillsTableBody">
+                            <!-- Bills will be listed here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Unpaid Bills Section -->
+            <div class="content-section" id="unpaid-bills">
+                <div class="header">
+                    <h2>Unpaid Bills Management</h2>
+                    <button class="add-btn" onclick="showUnpaidBillForm()">Add New Unpaid Bill</button>
+                </div>
+
+                <!-- Unpaid Bill Form -->
+                <div class="unpaid-bill-form" id="unpaidBillForm" style="display: none;">
+                    <h3>New Unpaid Bill</h3>
+                    <form id="unpaidBillFormElement">
+                        <div class="form-group">
+                            <label>Bill Name/Description</label>
+                            <input type="text" id="unpaidBillName" required placeholder="e.g., Water Bill">
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (KSH)</label>
+                            <input type="number" id="unpaidBillAmount" required min="0" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Due Date</label>
+                            <input type="date" id="unpaidBillDueDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Reference</label>
+                            <input type="text" id="unpaidBillReference" required placeholder="e.g., Invoice Number">
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="submit-btn">Save Unpaid Bill</button>
+                            <button type="button" class="cancel-btn" onclick="hideUnpaidBillForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Unpaid Bills Summary -->
+                <div class="unpaid-bills-summary">
+                    <div class="summary-card">
+                        <h3>Total Unpaid Bills</h3>
+                        <div class="amount" id="totalUnpaidBills">KSH 0</div>
+                        <div class="count" id="unpaidBillCount">0 unpaid bills</div>
+                    </div>
+                </div>
+
+                <!-- Unpaid Bills Table -->
+                <div class="unpaid-bills-table">
+                    <h3>Unpaid Bills History</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Due Date</th>
+                                <th>Bill Name</th>
+                                <th>Amount</th>
+                                <th>Reference</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unpaidBillsTableBody">
+                            <!-- Unpaid bills will be listed here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- M-PESA Section -->
+            <div class="content-section" id="mpesa">
+                <div class="header">
+                    <h2>M-PESA Transactions</h2>
+                    <button class="add-btn" onclick="showMpesaForm()">Add New M-PESA Transaction</button>
+                </div>
+
+                <!-- M-PESA Transaction Form -->
+                <div class="mpesa-form" id="mpesaForm" style="display: none;">
+                    <h3>New M-PESA Transaction</h3>
+                    <form id="mpesaFormElement">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="mpesaDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Amount (KSH)</label>
+                            <input type="number" id="mpesaAmount" required min="0" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" id="mpesaDescription" required placeholder="e.g., Payment for services">
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="submit-btn">Save Transaction</button>
+                            <button type="button" class="cancel-btn" onclick="hideMpesaForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- M-PESA Summary -->
+                <div class="mpesa-summary">
+                    <div class="summary-card">
+                        <h3>Total M-PESA Transactions</h3>
+                        <div class="amount" id="totalMpesaAmount">KSH 0</div>
+                        <div class="count" id="mpesaCount">0 transactions</div>
+                    </div>
+                </div>
+
+                <!-- M-PESA Transactions Table -->
+                <div class="mpesa-table">
+                    <h3>M-PESA Transactions History</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mpesaTableBody">
+                            <!-- M-PESA transactions will be listed here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add the script section at the bottom of the body -->
+            <script>
+                // Navigation handling
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        // Remove active class from all items
+                        document.querySelectorAll('.nav-item').forEach(nav => 
+                            nav.classList.remove('active'));
+                        document.querySelectorAll('.content-section').forEach(section => 
+                            section.classList.remove('active'));
+                        
+                        // Add active class to clicked item
+                        this.classList.add('active');
+                        
+                        // Show corresponding section
+                        const sectionId = this.getAttribute('data-section');
+                        const section = document.getElementById(sectionId);
+                        if (section) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+
+                // Handle Add Employee button
+                const addEmployeeBtn = document.querySelector('#employees .submit-btn');
+                const employeeForm = document.getElementById('employeeForm');
+                if (addEmployeeBtn) {
+                    addEmployeeBtn.addEventListener('click', () => {
+                        employeeForm.style.display = 
+                            employeeForm.style.display === 'none' ? 'block' : 'none';
+                    });
+                }
+
+                // Initialize transaction data
+                let transactions = [];
+                let openingBalance = 500000; // KSH 500,000
+                let currentBalance = openingBalance;
+
+                // Update summary cards
+                function updateSummaryCards() {
+                    let collections = transactions
+                        .filter(t => t.type === 'collection')
+                        .reduce((sum, t) => sum + t.amount, 0);
+                    
+                    let expenses = transactions
+                        .filter(t => t.type === 'expense')
+                        .reduce((sum, t) => sum + t.amount, 0);
+                    
+                    currentBalance = openingBalance + collections - expenses;
+
+                    // Update the summary cards
+                    document.querySelector('.summary-card.collection .amount').textContent = 
+                        `KSH ${collections.toLocaleString()}`;
+                    document.querySelector('.summary-card.expenses .amount').textContent = 
+                        `KSH ${expenses.toLocaleString()}`;
+                    document.querySelector('.summary-card.balance .amount').textContent = 
+                        `KSH ${currentBalance.toLocaleString()}`;
+                    
+                    // Update transaction counts
+                    document.querySelector('.summary-card.collection .transaction-count').textContent = 
+                        `${transactions.filter(t => t.type === 'collection').length} transactions today`;
+                    document.querySelector('.summary-card.expenses .transaction-count').textContent = 
+                        `${transactions.filter(t => t.type === 'expense').length} transactions today`;
+                }
+
+                // Add new transaction
+                function addTransaction(transaction) {
+                    transactions.push(transaction);
+                    updateSummaryCards();
+                    renderTransactionTable();
+                }
+
+                // Render transaction table
+                function renderTransactionTable() {
+                    const tbody = document.getElementById('transactionTableBody');
+                    tbody.innerHTML = '';
+
+                    let runningBalance = openingBalance;
+                    
+                    transactions.forEach(transaction => {
+                        if (transaction.type === 'collection') {
+                            runningBalance += transaction.amount;
+                        } else {
+                            runningBalance -= transaction.amount;
+                        }
+
+                        const row = document.createElement('tr');
+                        row.className = `${transaction.type}-row`;
+                        row.innerHTML = `
+                            <td>${transaction.time}</td>
+                            <td>${transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}</td>
+                            <td>${transaction.description}</td>
+                            <td>${transaction.reference}</td>
+                            <td>${transaction.type === 'collection' ? '+' : '-'}KSH ${transaction.amount.toLocaleString()}</td>
+                            <td>KSH ${runningBalance.toLocaleString()}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // Form submission handler
+                document.getElementById('cashTransactionForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const transaction = {
+                        time: new Date().toLocaleTimeString(),
+                        type: document.getElementById('transactionType').value,
+                        amount: parseFloat(document.getElementById('transactionAmount').value),
+                        description: document.getElementById('transactionDescription').value,
+                        reference: document.getElementById('transactionReference').value
+                    };
+
+                    addTransaction(transaction);
+                    hideTransactionForm();
+                    this.reset();
+                });
+
+                // Show transaction form
+                function showTransactionForm(type) {
+                    const form = document.getElementById('transactionForm');
+                    const typeSelect = document.getElementById('transactionType');
+                    form.style.display = 'block';
+                    typeSelect.value = type;
+                }
+
+                // Hide transaction form
+                function hideTransactionForm() {
+                    document.getElementById('transactionForm').style.display = 'none';
+                }
+
+                // Initialize the view
+                updateSummaryCards();
+                renderTransactionTable();
+
+                // Set today's date as default for the opening balance update
+                document.getElementById('openingBalanceUpdateDate').valueAsDate = new Date();
+
+                // Opening balance history
+                let balanceHistory = [];
+
+                function showOpeningBalanceForm() {
+                    document.getElementById('openingBalanceForm').style.display = 'block';
+                    document.getElementById('newOpeningBalance').value = openingBalance;
+                }
+
+                function hideOpeningBalanceForm() {
+                    document.getElementById('openingBalanceForm').style.display = 'none';
+                }
+
+                // Update opening balance and recalculate everything
+                function updateOpeningBalance(newBalance, date, reason) {
+                    // Store the old balance in history
+                    balanceHistory.push({
+                        oldBalance: openingBalance,
+                        newBalance: newBalance,
+                        date: date,
+                        reason: reason,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    // Update the opening balance
+                    openingBalance = newBalance;
+                    currentBalance = calculateCurrentBalance();
+
+                    // Update the display
+                    document.getElementById('openingBalanceAmount').textContent = 
+                        openingBalance.toLocaleString();
+                    document.getElementById('openingBalanceDate').textContent = 
+                        new Date(date).toLocaleDateString();
+
+                    // Update all related displays
+                    updateSummaryCards();
+                    renderTransactionTable();
+
+                    // Show success message
+                    showNotification('Opening balance updated successfully!');
+                }
+
+                // Calculate current balance including all transactions
+                function calculateCurrentBalance() {
+                    let balance = openingBalance;
+                    transactions.forEach(transaction => {
+                        if (transaction.type === 'collection') {
+                            balance += transaction.amount;
+                        } else {
+                            balance -= transaction.amount;
+                        }
+                    });
+                    return balance;
+                }
+
+                // Show notification
+                function showNotification(message) {
+                    const notification = document.createElement('div');
+                    notification.className = 'notification';
+                    notification.textContent = message;
+                    document.body.appendChild(notification);
+
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 3000);
+                }
+
+                // Handle opening balance form submission
+                document.getElementById('updateOpeningBalanceForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const newBalance = parseFloat(document.getElementById('newOpeningBalance').value);
+                    const date = document.getElementById('openingBalanceUpdateDate').value;
+                    const reason = document.getElementById('balanceUpdateReason').value;
+
+                    updateOpeningBalance(newBalance, date, reason);
+                    hideOpeningBalanceForm();
+                    this.reset();
+                });
+
+                // Initialize paid bills from localStorage
+                let paidBills = JSON.parse(localStorage.getItem('paidBills')) || [];
+
+                // Save bills to localStorage
+                function savePaidBills() {
+                    localStorage.setItem('paidBills', JSON.stringify(paidBills));
+                }
+
+                // Show/Hide bill form
+                function showBillForm() {
+                    document.getElementById('billForm').style.display = 'block';
+                    document.getElementById('billDate').valueAsDate = new Date();
+                }
+
+                function hideBillForm() {
+                    document.getElementById('billForm').style.display = 'none';
+                    document.getElementById('paidBillForm').reset();
+                }
+
+                // Add new bill payment
+                function addBillPayment(bill) {
+                    paidBills.push(bill);
+                    savePaidBills();
+                    updateBillsSummary();
+                    renderBillsTable();
+                    showNotification('Bill payment added successfully!');
+                }
+
+                // Delete bill payment
+                function deleteBillPayment(index) {
+                    if (confirm('Are you sure you want to delete this bill payment?')) {
+                        paidBills.splice(index, 1);
+                        savePaidBills();
+                        updateBillsSummary();
+                        renderBillsTable();
+                        showNotification('Bill payment deleted successfully!');
+                    }
+                }
+
+                // Update bills summary
+                function updateBillsSummary() {
+                    const total = paidBills.reduce((sum, bill) => sum + bill.amount, 0);
+                    document.getElementById('totalPaidBills').textContent = 
+                        `KSH ${total.toLocaleString()}`;
+                    document.getElementById('billCount').textContent = 
+                        `${paidBills.length} bills paid`;
+                }
+
+                // Render bills table
+                function renderBillsTable() {
+                    const tbody = document.getElementById('paidBillsTableBody');
+                    tbody.innerHTML = '';
+
+                    paidBills.forEach((bill, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(bill.date).toLocaleDateString()}</td>
+                            <td>${bill.name}</td>
+                            <td>KSH ${bill.amount.toLocaleString()}</td>
+                            <td>${bill.reference}</td>
+                            <td>
+                                <button class="delete-btn" onclick="deleteBillPayment(${index})">
+                                    Delete
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // Handle form submission
+                document.getElementById('paidBillForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const bill = {
+                        name: document.getElementById('billName').value,
+                        amount: parseFloat(document.getElementById('billAmount').value),
+                        date: document.getElementById('billDate').value,
+                        reference: document.getElementById('billReference').value,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    addBillPayment(bill);
+                    hideBillForm();
+                    this.reset();
+                });
+
+                // Initialize the view
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateBillsSummary();
+                    renderBillsTable();
+                });
+
+                // Show/Hide unpaid bill form
+                document.getElementById('addUnpaidBillBtn').addEventListener('click', function() {
+                    const form = document.getElementById('unpaidBillForm');
+                    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                });
+
+                // Handle form submission for unpaid bill
+                document.getElementById('unpaidBillFormElement').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const billName = document.getElementById('unpaidBillName').value;
+                    const billAmount = parseFloat(document.getElementById('unpaidBillAmount').value);
+
+                    // Add logic to save the unpaid bill (e.g., push to an array, update the table, etc.)
+
+                    // Reset the form
+                    this.reset();
+                    // Hide the form after submission
+                    document.getElementById('unpaidBillForm').style.display = 'none';
+                });
+
+                function hideUnpaidBillForm() {
+                    document.getElementById('unpaidBillForm').style.display = 'none';
+                }
+
+                // Initialize unpaid bills from localStorage
+                let unpaidBills = JSON.parse(localStorage.getItem('unpaidBills')) || [];
+
+                // Save unpaid bills to localStorage
+                function saveUnpaidBills() {
+                    localStorage.setItem('unpaidBills', JSON.stringify(unpaidBills));
+                }
+
+                // Show/Hide unpaid bill form
+                function showUnpaidBillForm() {
+                    document.getElementById('unpaidBillForm').style.display = 'block';
+                    document.getElementById('unpaidBillDueDate').valueAsDate = new Date();
+                }
+
+                function hideUnpaidBillForm() {
+                    document.getElementById('unpaidBillForm').style.display = 'none';
+                    document.getElementById('unpaidBillFormElement').reset();
+                }
+
+                // Add new unpaid bill
+                function addUnpaidBill(bill) {
+                    unpaidBills.push(bill);
+                    saveUnpaidBills();
+                    updateUnpaidBillsSummary();
+                    renderUnpaidBillsTable();
+                    showNotification('Unpaid bill added successfully!');
+                }
+
+                // Delete unpaid bill
+                function deleteUnpaidBill(index) {
+                    if (confirm('Are you sure you want to delete this unpaid bill?')) {
+                        unpaidBills.splice(index, 1);
+                        saveUnpaidBills();
+                        updateUnpaidBillsSummary();
+                        renderUnpaidBillsTable();
+                        showNotification('Unpaid bill deleted successfully!');
+                    }
+                }
+
+                // Update unpaid bills summary
+                function updateUnpaidBillsSummary() {
+                    const total = unpaidBills.reduce((sum, bill) => sum + bill.amount, 0);
+                    document.getElementById('totalUnpaidBills').textContent = 
+                        `KSH ${total.toLocaleString()}`;
+                    document.getElementById('unpaidBillCount').textContent = 
+                        `${unpaidBills.length} unpaid bills`;
+                }
+
+                // Render unpaid bills table
+                function renderUnpaidBillsTable() {
+                    const tbody = document.getElementById('unpaidBillsTableBody');
+                    tbody.innerHTML = '';
+
+                    unpaidBills.forEach((bill, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(bill.dueDate).toLocaleDateString()}</td>
+                            <td>${bill.name}</td>
+                            <td>KSH ${bill.amount.toLocaleString()}</td>
+                            <td>${bill.reference}</td>
+                            <td>
+                                <button class="delete-btn" onclick="deleteUnpaidBill(${index})">
+                                    Delete
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // Handle unpaid bill form submission
+                document.getElementById('unpaidBillFormElement').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const bill = {
+                        name: document.getElementById('unpaidBillName').value,
+                        amount: parseFloat(document.getElementById('unpaidBillAmount').value),
+                        dueDate: document.getElementById('unpaidBillDueDate').value,
+                        reference: document.getElementById('unpaidBillReference').value,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    addUnpaidBill(bill);
+                    hideUnpaidBillForm();
+                    this.reset();
+                });
+
+                // Initialize the view
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateUnpaidBillsSummary();
+                    renderUnpaidBillsTable();
+                });
+
+                // Initialize M-PESA transactions from localStorage
+                let mpesaTransactions = JSON.parse(localStorage.getItem('mpesaTransactions')) || [];
+
+                // Save M-PESA transactions to localStorage
+                function saveMpesaTransactions() {
+                    localStorage.setItem('mpesaTransactions', JSON.stringify(mpesaTransactions));
+                }
+
+                // Show/Hide M-PESA transaction form
+                function showMpesaForm() {
+                    document.getElementById('mpesaForm').style.display = 'block';
+                    document.getElementById('mpesaDate').valueAsDate = new Date();
+                }
+
+                function hideMpesaForm() {
+                    document.getElementById('mpesaForm').style.display = 'none';
+                    document.getElementById('mpesaFormElement').reset();
+                }
+
+                // Add new M-PESA transaction
+                function addMpesaTransaction(transaction) {
+                    mpesaTransactions.push(transaction);
+                    saveMpesaTransactions();
+                    updateMpesaSummary();
+                    renderMpesaTable(); // Ensure the table is updated immediately
+                    showNotification('M-PESA transaction added successfully!');
+                }
+
+                // Delete M-PESA transaction
+                function deleteMpesaTransaction(index) {
+                    if (confirm('Are you sure you want to delete this M-PESA transaction?')) {
+                        mpesaTransactions.splice(index, 1);
+                        saveMpesaTransactions();
+                        updateMpesaSummary();
+                        renderMpesaTable(); // Ensure the table is updated immediately
+                        showNotification('M-PESA transaction deleted successfully!');
+                    }
+                }
+
+                // Update M-PESA summary
+                function updateMpesaSummary() {
+                    const total = mpesaTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+                    document.getElementById('totalMpesaAmount').textContent = 
+                        `KSH ${total.toLocaleString()}`;
+                    document.getElementById('mpesaCount').textContent = 
+                        `${mpesaTransactions.length} transactions`;
+                }
+
+                // Render M-PESA transactions table
+                function renderMpesaTable() {
+                    const tbody = document.getElementById('mpesaTableBody');
+                    tbody.innerHTML = '';
+
+                    mpesaTransactions.forEach((transaction, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(transaction.date).toLocaleDateString()}</td>
+                            <td>${transaction.description}</td>
+                            <td>KSH ${transaction.amount.toLocaleString()}</td>
+                            <td>
+                                <button class="delete-btn" onclick="deleteMpesaTransaction(${index})">
+                                    Delete
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // Handle M-PESA form submission
+                document.getElementById('mpesaFormElement').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const transaction = {
+                        date: document.getElementById('mpesaDate').value,
+                        amount: parseFloat(document.getElementById('mpesaAmount').value),
+                        description: document.getElementById('mpesaDescription').value,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    addMpesaTransaction(transaction);
+                    hideMpesaForm();
+                    this.reset();
+                });
+
+                // Initialize the view
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateMpesaSummary();
+                    renderMpesaTable();
+                });
+
+                // Function to update dashboard metrics
+                function updateDashboard() {
+                    // Get M-PESA transactions
+                    const mpesaTransactions = JSON.parse(localStorage.getItem('mpesaTransactions')) || [];
+                    const unpaidBills = JSON.parse(localStorage.getItem('unpaidBills')) || [];
+                    const paidBills = JSON.parse(localStorage.getItem('paidBills')) || [];
+
+                    // Calculate M-PESA total
+                    const mpesaTotal = mpesaTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+                    document.getElementById('mpesaTotal').textContent = `KSH ${mpesaTotal.toLocaleString()}`;
+
+                    // Calculate unpaid bills total
+                    const unpaidTotal = unpaidBills.reduce((sum, bill) => sum + bill.amount, 0);
+                    document.getElementById('unpaidBillsTotal').textContent = `KSH ${unpaidTotal.toLocaleString()}`;
+
+                    // Calculate paid bills total
+                    const paidTotal = paidBills.reduce((sum, bill) => sum + bill.amount, 0);
+                    document.getElementById('paidBillsTotal').textContent = `KSH ${paidTotal.toLocaleString()}`;
+
+                    // Update recent transactions
+                    const recentTransactionsBody = document.getElementById('recentTransactionsBody');
+                    recentTransactionsBody.innerHTML = ''; // Clear existing rows
+
+                    // Add recent M-PESA transactions
+                    mpesaTransactions.slice(-5).forEach(transaction => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(transaction.date).toLocaleDateString()}</td>
+                            <td>${transaction.description}</td>
+                            <td>KSH ${transaction.amount.toLocaleString()}</td>
+                        `;
+                        recentTransactionsBody.appendChild(row);
+                    });
+                }
+
+                // Call updateDashboard on page load
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateDashboard();
+                });
+
+                // Function to calculate total employees and payroll
+                function updateDashboard() {
+                    // Assuming you have a way to get employee data
+                    const employees = JSON.parse(localStorage.getItem('employees')) || [];
+                    const payrolls = JSON.parse(localStorage.getItem('payrolls')) || [];
+
+                    // Calculate total employees
+                    const totalEmployees = employees.length;
+                    const activeEmployees = employees.filter(emp => emp.status === 'active').length;
+                    const onLeaveEmployees = employees.filter(emp => emp.status === 'on leave').length;
+
+                    // Calculate total payroll
+                    const totalPayroll = payrolls.reduce((sum, payroll) => sum + payroll.amount, 0);
+                    const processedPayroll = payrolls.filter(payroll => payroll.status === 'processed').reduce((sum, payroll) => sum + payroll.amount, 0);
+                    const pendingPayroll = payrolls.filter(payroll => payroll.status === 'pending').reduce((sum, payroll) => sum + payroll.amount, 0);
+
+                    // Update the dashboard
+                    document.getElementById('totalEmployees').textContent = totalEmployees;
+                    document.getElementById('activeEmployees').textContent = activeEmployees;
+                    document.getElementById('onLeaveEmployees').textContent = onLeaveEmployees;
+                    document.getElementById('totalPayroll').textContent = `KSH ${totalPayroll.toLocaleString()}`;
+                    document.getElementById('processedPayroll').textContent = processedPayroll.toLocaleString();
+                    document.getElementById('pendingPayroll').textContent = pendingPayroll.toLocaleString();
+                }
+
+                // Initialize the view
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateDashboard();
+                });
+
+                // Initialize employees from localStorage
+                let employees = JSON.parse(localStorage.getItem('employees')) || [];
+
+                // Save employees to localStorage
+                function saveEmployees() {
+                    localStorage.setItem('employees', JSON.stringify(employees));
+                }
+
+                // Show/Hide employee form
+                function showEmployeeForm() {
+                    document.getElementById('employeeForm').style.display = 'block';
+                }
+
+                function hideEmployeeForm() {
+                    document.getElementById('employeeForm').style.display = 'none';
+                    document.getElementById('employeeFormElement').reset();
+                }
+
+                // Add new employee
+                function addEmployee(employee) {
+                    employees.push(employee);
+                    saveEmployees();
+                    renderEmployeesTable(); // Ensure the table is updated immediately
+                    showNotification('Employee added successfully!');
+                }
+
+                // Delete employee
+                function deleteEmployee(index) {
+                    if (confirm('Are you sure you want to delete this employee?')) {
+                        employees.splice(index, 1);
+                        saveEmployees();
+                        renderEmployeesTable(); // Ensure the table is updated immediately
+                        showNotification('Employee deleted successfully!');
+                    }
+                }
+
+                // Render employees table
+                function renderEmployeesTable() {
+                    const tbody = document.getElementById('employeesTableBody');
+                    tbody.innerHTML = '';
+
+                    employees.forEach((employee, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${employee.id}</td>
+                            <td contenteditable="true" onblur="updateEmployee(${index}, 'name', this.innerText)">${employee.name}</td>
+                            <td contenteditable="true" onblur="updateEmployee(${index}, 'department', this.innerText)">${employee.department}</td>
+                            <td contenteditable="true" onblur="updateEmployee(${index}, 'position', this.innerText)">${employee.position}</td>
+                            <td contenteditable="true" onblur="updateEmployee(${index}, 'salary', this.innerText)">${employee.salary.toLocaleString()}</td>
+                            <td>
+                                <button class="delete-btn" onclick="deleteEmployee(${index})">Delete</button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // Update employee details
+                function updateEmployee(index, field, value) {
+                    if (field === 'salary') {
+                        employees[index][field] = parseFloat(value.replace(/,/g, '')); // Convert to number
+                    } else {
+                        employees[index][field] = value;
+                    }
+                    saveEmployees(); // Save changes immediately after editing
+                }
+
+                // Handle employee form submission
+                document.getElementById('employeeFormElement').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const employee = {
+                        id: document.getElementById('employeeId').value,
+                        name: document.getElementById('employeeName').value,
+                        department: document.getElementById('employeeDepartment').value,
+                        position: document.getElementById('employeePosition').value,
+                        salary: parseFloat(document.getElementById('employeeSalary').value),
+                    };
+
+                    addEmployee(employee);
+                    hideEmployeeForm();
+                    this.reset();
+                });
+
+                // Initialize the view
+                document.addEventListener('DOMContentLoaded', function() {
+                    renderEmployeesTable();
+                });
+            </script>
+        </div>
+    </div>
+</body>
+</html>
